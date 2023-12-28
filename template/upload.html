@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accent Checker</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      background-color: #000000;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+      width: 100%;
+      display: flex;
+      align-items: center;
+    }
+
+    #logo {
+      max-width: 100px; /* Adjust the max-width as needed */
+      margin-right: 10px; /* Reduce the margin between logo and text */
+      padding-left: 10px; /* Add padding on the left of the logo */
+    }
+
+    #upload-container {
+      text-align: center;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+    }
+
+    #upload-input {
+      display: none;
+    }
+
+    #upload-label {
+      cursor: pointer;
+      background-color: #4caf50;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 18px;
+      width: 200px;
+      transition: background-color 0.3s ease;
+    }
+
+    #upload-label:hover {
+      background-color: #45a049;
+    }
+
+    #label {
+      cursor: pointer;
+      background-color: rgb(0, 183, 255);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 18px;
+      width: 100px;
+      border: none;
+      transition: background-color 0.3s ease;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-left: 0px; /* Reduce the margin between logo and text */
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <img src="https://static.theprint.in/wp-content/uploads/2022/10/ANI-20221019125223.jpg" alt="Logo" id="logo"> <!-- Replace the URL with your logo image -->
+    <h1 style="font-family: Arial, Helvetica, sans-serif;">Accent Checker</h1>
+  </header>
+
+  <div id="upload-container">
+    <h2>Hello, Welcome to PreludeSys!</h2>
+
+    <form id="accent-form" method="post" enctype="multipart/form-data" action="{% url 'hello' %}">
+        {% csrf_token %}
+        <label for="upload-input" id="upload-label">Choose Audio File</label>
+        <input type="file" name="audio_file" id="upload-input" accept="audio/*">
+        <button type="button" id="label" onclick="submitForm()">Upload</button>
+    </form>
+
+    <div id="result-container"></div>
+  </div>
+
+  <script>
+    function submitForm() {
+      var form = document.getElementById("accent-form");
+      var formData = new FormData(form);
+      var fileInput = document.getElementById("upload-input");
+      var fileName = fileInput.files[0] ? fileInput.files[0].name : "No file selected";
+  
+      // Update the label text with the filename
+      var uploadLabel = document.getElementById("upload-label");
+      uploadLabel.innerHTML = fileName;
+  
+      // Send formData to the server using Fetch
+      fetch("{% url 'hello' %}", {
+        method: "POST",
+        body: formData
+      })
+      .then(response => response.text())
+      .then(result => {
+        // Update the resultContainer with the obtained result
+        var resultContainer = document.getElementById("result-container");
+        resultContainer.innerHTML = "<p>" + result + "</p>";
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        // Handle error if needed
+      });
+    }
+  
+    // Update the label text when a file is selected
+    document.getElementById("upload-input").addEventListener("change", function() {
+      var fileName = this.files[0] ? this.files[0].name : "Choose Audio File";
+      var uploadLabel = document.getElementById("upload-label");
+      uploadLabel.innerHTML = fileName;
+    });
+  </script>
+</body>
+
+</html>
